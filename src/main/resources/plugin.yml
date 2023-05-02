@@ -1,0 +1,10 @@
+name: TerraCodex
+authors:
+  - Numilani
+version: '${version}'
+main: me.numilani.terracodex.TerraCodex
+api-version: 1.18
+load: STARTUP
+depend:
+  - BKCommonLib
+description: Minecraft integration into TerraCodex worldbuilding system
