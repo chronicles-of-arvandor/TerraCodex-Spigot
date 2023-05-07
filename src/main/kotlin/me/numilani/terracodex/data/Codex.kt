@@ -1,3 +1,3 @@
 package me.numilani.terracodex.data
 
-data class Codex(val Id: String, var Name: String)
+data class Codex(val id: String, var name: String)

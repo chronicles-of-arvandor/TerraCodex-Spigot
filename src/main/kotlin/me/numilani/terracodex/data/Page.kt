@@ -1,10 +1,10 @@
 package me.numilani.terracodex.data
 
 data class Page(
-    val Id: String,
-    var CategoryId: String,
-    var Contents: String,
-    var Tags: String,
-    var RevealedTo: String,
-    var PageStatus: String
+    val id: String,
+    var categoryId: String,
+    var contents: String,
+    var tags: String,
+    var revealedTo: String,
+    var pageStatus: String
 )

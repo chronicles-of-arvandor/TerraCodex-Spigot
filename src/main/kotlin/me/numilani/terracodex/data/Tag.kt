@@ -1,3 +1,3 @@
 package me.numilani.terracodex.data
 
-data class Tag(val Id: String, val CodexId: String, var Name: String)
+data class Tag(val id: String, val codexId: String, var name: String)

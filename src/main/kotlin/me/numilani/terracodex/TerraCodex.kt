@@ -5,15 +5,15 @@ import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 
 class TerraCodex() : JavaPlugin() {
-    var CmdHandler : CloudSimpleHandler = CloudSimpleHandler()
+    private val cmdHandler : CloudSimpleHandler = CloudSimpleHandler()
 
     override fun onEnable() {
 
-        val dbfile = "${dataFolder}${File.separatorChar}sample.db"
+        val dbFile = File(dataFolder, "sample.db")
         // TODO: once SqliteDataSourceConnector is written, intialize here
 
         // Parse and register all commands
-        CmdHandler.enable(this)
+        cmdHandler.enable(this)
     }
 
 

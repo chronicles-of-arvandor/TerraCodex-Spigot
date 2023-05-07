@@ -1,9 +1,7 @@
 package me.numilani.terracodex.data
 
-import com.google.common.collect.ImmutableList
-
 /*
-For sake of getting an MVP out as quickly as possble,
+For sake of getting an MVP out as quickly as possible,
 I'm using Sqlite for storing data. Eventually, though,
 the plugin should establish a connection to either
 an external database or, more likely, some API endpoint
@@ -33,7 +31,7 @@ interface IDataSourceConnector {
      * Creates a new category. Returns the ID of the new category.
      */
     fun createCategory(name: String, codexId: String): String
-    fun getCategories(codexId: String): ImmutableList<Category>
+    fun getCategories(codexId: String): List<Category>
     fun getCategoryByName(name: String): Category?
     fun getCategoryById(id: String): Category?
 
@@ -47,8 +45,8 @@ interface IDataSourceConnector {
      */
     fun createPage(name: String, categoryId: String) : String
 
-    fun getAllCategoryPages(categoryId: String): ImmutableList<Page>
-    fun getAllCodexPages(codexId: String): ImmutableList<Page>
+    fun getAllCategoryPages(categoryId: String): List<Page>
+    fun getAllCodexPages(codexId: String): List<Page>
 
     /**
      * Find pages by search criterion. All fields are optional as they can be mixed and matched.
@@ -60,7 +58,7 @@ interface IDataSourceConnector {
      * @param fieldValue A list of field/value pairs to match
      * @param textSearch A string to search for in the contents of the codex entry.
      */
-    fun findPages(tags: List<String>, categories: List<String>, fieldValue: List<Pair<String, String>>, textSearch: String): ImmutableList<Page>
+    fun findPages(tags: List<String>, categories: List<String>, fieldValue: List<Pair<String, String>>, textSearch: String): List<Page>
 
     fun getPageByName(name: String): Page?
     fun getPageById(id: String): Page?

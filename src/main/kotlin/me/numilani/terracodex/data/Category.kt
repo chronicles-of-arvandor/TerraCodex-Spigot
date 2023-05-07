@@ -1,3 +1,3 @@
 package me.numilani.terracodex.data
 
-data class Category(val Id: String, val CodexId: String, var Name: String)
+data class Category(val id: String, val codexId: String, var name: String)
