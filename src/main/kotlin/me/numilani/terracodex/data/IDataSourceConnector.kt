@@ -1,5 +1,9 @@
 package me.numilani.terracodex.data
 
+import java.io.File
+import java.sql.Connection
+import java.sql.DriverManager
+
 /*
 For sake of getting an MVP out as quickly as possible,
 I'm using Sqlite for storing data. Eventually, though,
@@ -10,14 +14,15 @@ likely act as the primary server in the future.
 */
 
 interface IDataSourceConnector {
+    val conn : Connection
 
-    fun establishConnection()
+
 
     /**
      * Creates a new codex. Returns the ID of the new codex.
      */
     fun createCodex(name: String): String
-    fun getCodexByName(name: String): Codex?
+//    fun getCodexByName(name: String): Codex?
     fun getCodexById(id: String): Codex?
 
     /**
@@ -32,7 +37,7 @@ interface IDataSourceConnector {
      */
     fun createCategory(name: String, codexId: String): String
     fun getCategories(codexId: String): List<Category>
-    fun getCategoryByName(name: String): Category?
+//    fun getCategoryByName(name: String, codexId: String): Category?
     fun getCategoryById(id: String): Category?
 
     /**
@@ -60,8 +65,12 @@ interface IDataSourceConnector {
      */
     fun findPages(tags: List<String>, categories: List<String>, fieldValue: List<Pair<String, String>>, textSearch: String): List<Page>
 
-    fun getPageByName(name: String): Page?
+//    fun getPageByName(name: String, codexId: String): Page?
     fun getPageById(id: String): Page?
 
     fun revealPage(pageId: String, playerId: String)
+    fun ensureConnClosed()
+    fun updateConfig(key: String, value: String)
+    fun getConfig(key: String): String
+    fun initDatabase()
 }
