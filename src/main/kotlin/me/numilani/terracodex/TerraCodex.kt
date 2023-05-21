@@ -28,7 +28,13 @@ class TerraCodex() : JavaPlugin() {
                 dataSource = SqliteDataSourceConnector(this)
                 if (isFirstRun) dataSource.initDatabase()
             }
-            else -> throw Exception("Invalid dataSourceType in config.yml: " + cfg.get("dataSourceType", "NOTSPECIFIED"))
+
+            else -> throw Exception(
+                "Invalid dataSourceType in config.yml: " + cfg.get(
+                    "dataSourceType",
+                    "NOTSPECIFIED"
+                )
+            )
         }
 
         // Parse and register all commands
@@ -43,9 +49,6 @@ class TerraCodex() : JavaPlugin() {
 
         cfgFile.addHeader("If using anything other than sqlite, enter your connection string here.")
         cfgFile.set("jdbcConnString", "")
-
-//        cfgFile.addHeader("When initializing the database, this codex name will be used.")
-//        cfgFile.set("initCodexName", "CHANGEME")
 
         cfgFile.saveSync()
     }

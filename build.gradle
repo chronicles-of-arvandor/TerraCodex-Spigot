@@ -3,17 +3,20 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.8.10'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'org.jlleitschuh.gradle.ktlint' version '11.3.2'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.21'
 }
 
 group = 'me.numilani'
-version = '1.0-SNAPSHOT'
+version = '0.3-alpha'
 
 repositories {
     mavenCentral()
-    maven {name = 'spigotmc-repo'
+    maven {
+        name = 'spigotmc-repo'
         url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
     }
-    maven {name = 'sonatype'
+    maven {
+        name = 'sonatype'
         url = 'https://oss.sonatype.org/content/groups/public/'
     }
     maven {
@@ -30,6 +33,7 @@ dependencies {
     compileOnly 'org.bergerhealer.cloud.commandframework:cloud-annotations:1.8.0-SNAPSHOT'
     compileOnly 'org.bergerhealer.cloud.commandframework:cloud-minecraft-extras:1.8.0-SNAPSHOT'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0'
 }
 
 

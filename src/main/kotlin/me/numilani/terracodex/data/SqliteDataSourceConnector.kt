@@ -6,10 +6,10 @@ import java.sql.Connection
 import java.sql.DriverManager
 import java.util.*
 
-class SqliteDataSourceConnector(private val plugin: TerraCodex) : IDataSourceConnector {
-    val DB_FILENAME = "sample.db"
+class SqliteDataSourceConnector(plugin: TerraCodex) : IDataSourceConnector {
+    private val dbFilename = "sample.db"
     override val conn: Connection =
-        DriverManager.getConnection("jdbc:sqlite:" + File(plugin.dataFolder, DB_FILENAME).path)
+        DriverManager.getConnection("jdbc:sqlite:" + File(plugin.dataFolder, dbFilename).path)
 
     override fun ensureConnClosed() {
         if (!conn.isClosed) {
@@ -77,7 +77,7 @@ class SqliteDataSourceConnector(private val plugin: TerraCodex) : IDataSourceCon
     override fun getCategories(codexId: String): List<Category> {
         val returnValue = mutableListOf<Category>()
 
-        val statement = conn.prepareStatement("SELECT id, codexId, name FROM Codex WHERE codexId = ?")
+        val statement = conn.prepareStatement("SELECT id, codexId, name FROM Category WHERE codexId = ?")
         statement.setString(1, codexId)
         val queryRes = statement.executeQuery()
 
@@ -101,25 +101,80 @@ class SqliteDataSourceConnector(private val plugin: TerraCodex) : IDataSourceCon
         return returnValue
     }
 
+    override fun getCategoryByName(name: String, codexId: String): Category? {
+        var returnValue: Category? = null
+
+        val statement = conn.prepareStatement("SELECT id, codexId, name FROM Category WHERE name = ? AND codexId = ?")
+        statement.setString(1, name)
+        statement.setString(2, codexId)
+        val queryRes = statement.executeQuery()
+
+        if (queryRes.next()) {
+            returnValue = Category(queryRes.getString(1), queryRes.getString(2), queryRes.getString(3))
+        }
+        return returnValue
+    }
+
     override fun updateCategory(change: Category): Boolean {
         var success = false
 
         val statement = conn.prepareStatement("UPDATE Category SET name = ?, codexId = ? WHERE id = ?")
         statement.setString(1, change.name)
-        statement.setString(1, change.codexId)
-        statement.setString(2, change.id)
+        statement.setString(2, change.codexId)
+        statement.setString(3, change.id)
         if (statement.executeUpdate() == 1) success = true
         return success
     }
 
+    override fun deleteCategory(id: String): Boolean {
+        var success = false
+
+        val statement = conn.prepareStatement("DELETE FROM Category WHERE id = ?")
+        statement.setString(1, id)
+        if (statement.executeUpdate() == 1) success = true
+
+        return success
+    }
+
     override fun createPage(name: String, categoryId: String): String {
-        val statement = conn.prepareStatement("INSERT INTO Page (id, categoryId, name) VALUES (?,?,?)")
+        val statement =
+            conn.prepareStatement("INSERT INTO Page (id, categoryId, name, contents, tags, revealedTo, pageStatus) VALUES (?,?,?,'{}','{}','{}','NEW')")
         val uuid: String = UUID.randomUUID().toString()
         statement.setString(1, uuid)
         statement.setString(2, categoryId)
-        statement.setString(2, name)
+        statement.setString(3, name)
         statement.execute()
         return uuid
+    }
+
+    override fun updatePage(id: String, key: String, value: String): Boolean {
+        var success = false
+
+        var statementBody = "UPDATE Page SET "
+        statementBody += when (key) {
+            "name" -> "name = ?"
+            "categoryId" -> "categoryId = ?"
+            "tags" -> "tags = ?"
+            "status" -> "status = ?"
+            else -> "contents = json_set(contents, '$.$key', ?)"
+        }
+        statementBody += " WHERE id = ?"
+        val statement = conn.prepareStatement(statementBody)
+        statement.setString(1, value)
+        statement.setString(2, id)
+
+        if (statement.executeUpdate() == 1) success = true
+        return success
+    }
+
+    override fun deletePage(id: String): Boolean {
+        var success = false
+
+        val statement = conn.prepareStatement("DELETE FROM Page WHERE id = ?")
+        statement.setString(1, id)
+        if (statement.executeUpdate() == 1) success = true
+
+        return success
     }
 
     override fun getAllCategoryPages(categoryId: String): List<Page> {
@@ -135,10 +190,10 @@ class SqliteDataSourceConnector(private val plugin: TerraCodex) : IDataSourceCon
                 queryRes.getString(1),
                 queryRes.getString(2),
                 queryRes.getString(3),
-                queryRes.getString(4),
-                queryRes.getString(5),
-                queryRes.getString(6),
-                queryRes.getString(7)
+                queryRes.getString(4) ?: "{}",
+                queryRes.getString(5) ?: "{}",
+                queryRes.getString(6) ?: "{}",
+                queryRes.getString(7) ?: "{}"
             )
         }
         return returnValue
@@ -149,7 +204,7 @@ class SqliteDataSourceConnector(private val plugin: TerraCodex) : IDataSourceCon
         val returnValue = mutableListOf<Page>()
 
         val statement =
-            conn.prepareStatement("SELECT id, categoryId, name, contents, tags, revealedTo, pageStatus, Category.codexId FROM Page JOIN Category ON Category.id = Page.categoryId WHERE Category.codexId = ?")
+            conn.prepareStatement("SELECT Page.id, categoryId, Page.name, contents, tags, revealedTo, pageStatus, Category.codexId FROM Page JOIN Category ON Category.id = Page.categoryId WHERE Category.codexId = ?")
         statement.setString(1, codexId)
         val queryRes = statement.executeQuery()
 
@@ -158,10 +213,10 @@ class SqliteDataSourceConnector(private val plugin: TerraCodex) : IDataSourceCon
                 queryRes.getString(1),
                 queryRes.getString(2),
                 queryRes.getString(3),
-                queryRes.getString(4),
-                queryRes.getString(5),
-                queryRes.getString(6),
-                queryRes.getString(7)
+                queryRes.getString(4) ?: "{}",
+                queryRes.getString(5) ?: "{}",
+                queryRes.getString(6) ?: "{}",
+                queryRes.getString(7) ?: "{}"
             )
         }
         return returnValue
@@ -190,10 +245,34 @@ class SqliteDataSourceConnector(private val plugin: TerraCodex) : IDataSourceCon
                 queryRes.getString(1),
                 queryRes.getString(2),
                 queryRes.getString(3),
-                queryRes.getString(4),
-                queryRes.getString(5),
-                queryRes.getString(6),
-                queryRes.getString(7)
+                queryRes.getString(4) ?: "{}",
+                queryRes.getString(5) ?: "{}",
+                queryRes.getString(6) ?: "{}",
+                queryRes.getString(7) ?: "{}"
+            )
+        }
+        return returnValue
+    }
+
+    override fun getPageByName(name: String, codexId: String): Page? {
+        var returnValue: Page? = null
+
+        val statement =
+            conn.prepareStatement("SELECT Page.id, categoryId, Page.name, contents, tags, revealedTo, pageStatus FROM Page JOIN Category ON Page.categoryId = Category.id WHERE Page.name = ? and Category.codexId = ?")
+        statement.setString(1, name)
+        statement.setString(2, codexId)
+        val queryRes = statement.executeQuery()
+
+        // there should only be one, so just get the first row
+        if (queryRes.next()) {
+            returnValue = Page(
+                queryRes.getString(1),
+                queryRes.getString(2),
+                queryRes.getString(3),
+                queryRes.getString(4) ?: "{}",
+                queryRes.getString(5) ?: "{}",
+                queryRes.getString(6) ?: "{}",
+                queryRes.getString(7) ?: "{}"
             )
         }
         return returnValue

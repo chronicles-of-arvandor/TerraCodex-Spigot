@@ -1,8 +1,6 @@
 package me.numilani.terracodex.data
 
-import java.io.File
 import java.sql.Connection
-import java.sql.DriverManager
 
 /*
 For sake of getting an MVP out as quickly as possible,
@@ -14,21 +12,20 @@ likely act as the primary server in the future.
 */
 
 interface IDataSourceConnector {
-    val conn : Connection
-
-
+    val conn: Connection
 
     /**
      * Creates a new codex. Returns the ID of the new codex.
      */
     fun createCodex(name: String): String
-//    fun getCodexByName(name: String): Codex?
+
+    //    fun getCodexByName(name: String): Codex?
     fun getCodexById(id: String): Codex?
 
     /**
      * Updates a codex by comparing and merging changes. Returns true if update succeeds.
      */
-    fun updateCodex(change: Codex) : Boolean
+    fun updateCodex(change: Codex): Boolean
     // NOTE: The lack of a "delete codex" is intentional here.
     // Deleting a codex should not be done in-game, only by an admin.
 
@@ -37,18 +34,19 @@ interface IDataSourceConnector {
      */
     fun createCategory(name: String, codexId: String): String
     fun getCategories(codexId: String): List<Category>
-//    fun getCategoryByName(name: String, codexId: String): Category?
+
+    //    fun getCategoryByName(name: String, codexId: String): Category?
     fun getCategoryById(id: String): Category?
 
     /**
      * Updates a category by comparing and merging. Returns true if update succeeds.
      */
-    fun updateCategory(change: Category) : Boolean
+    fun updateCategory(change: Category): Boolean
 
     /**
      * Creates a new page. Returns the ID of the new page.
      */
-    fun createPage(name: String, categoryId: String) : String
+    fun createPage(name: String, categoryId: String): String
 
     fun getAllCategoryPages(categoryId: String): List<Page>
     fun getAllCodexPages(codexId: String): List<Page>
@@ -63,14 +61,23 @@ interface IDataSourceConnector {
      * @param fieldValue A list of field/value pairs to match
      * @param textSearch A string to search for in the contents of the codex entry.
      */
-    fun findPages(tags: List<String>, categories: List<String>, fieldValue: List<Pair<String, String>>, textSearch: String): List<Page>
+    fun findPages(
+        tags: List<String>,
+        categories: List<String>,
+        fieldValue: List<Pair<String, String>>,
+        textSearch: String
+    ): List<Page>
 
-//    fun getPageByName(name: String, codexId: String): Page?
+    //    fun getPageByName(name: String, codexId: String): Page?
     fun getPageById(id: String): Page?
-
     fun revealPage(pageId: String, playerId: String)
     fun ensureConnClosed()
     fun updateConfig(key: String, value: String)
     fun getConfig(key: String): String
     fun initDatabase()
+    fun updatePage(id: String, key: String, value: String): Boolean
+    fun deleteCategory(id: String): Boolean
+    fun deletePage(id: String): Boolean
+    fun getCategoryByName(name: String, codexId: String): Category?
+    fun getPageByName(name: String, codexId: String): Page?
 }
