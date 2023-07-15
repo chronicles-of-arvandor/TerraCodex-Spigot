@@ -42,7 +42,7 @@ class CodexCommands(var plugin: TerraCodex) {
             var id = plugin.dataSource.createCategory(name, defaultCodexId)
             sender.sendMessage("${colorSysMsg}Category $colorSubjectMsg$name created!")
         } catch (e: Exception) {
-            sender.sendMessage("${colorErrMsg}Failed to create category ${ChatColor.RESET}(see server log)")
+            sender.sendMessage("${colorErrMsg}Failed to create category - does it already exist? (see server log)")
             plugin.logger.warning("Failed to create category: ${e.message} ${e.stackTraceToString()}")
         }
     }
@@ -122,7 +122,7 @@ class CodexCommands(var plugin: TerraCodex) {
             var pageId = plugin.dataSource.createPage(name, category.id)
             sender.sendMessage("${colorSysMsg}Page \"$name\" created!")
         } catch (e: Exception) {
-            sender.sendMessage("${colorErrMsg}Couldn't create page (see console log)")
+            sender.sendMessage("${colorErrMsg}Couldn't create page - does it already exist? (see console log)")
             plugin.logger.warning("Couldn't create page: ${e.message} ${e.stackTraceToString()}")
         }
     }

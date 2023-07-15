@@ -80,4 +80,5 @@ interface IDataSourceConnector {
     fun deletePage(id: String): Boolean
     fun getCategoryByName(name: String, codexId: String): Category?
     fun getPageByName(name: String, codexId: String): Page?
+    fun databaseIsInitialized(): Boolean
 }
